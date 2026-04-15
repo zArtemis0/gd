@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Geometry Dash</title>
+    <link rel="icon" href="/geometrydashdotcom/favicon.ico" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; }
+        body { overflow: hidden; background: black;}
+        canvas { display: block; margin: 0 auto; }
+    </style>
+  <script>
+    var levelId = Number(new URLSearchParams(location.search).get('id')) || 1;
+    async function start() {
+      await navigator.serviceWorker.register('/geometrydashdotcom/worker.js');
+      await navigator.serviceWorker.ready;
+
+      if (!navigator.serviceWorker.controller) {
+        await new Promise((resolve) => {
+          navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+        });
+      }
+
+      navigator.serviceWorker.controller?.postMessage({ levelId });
+
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = `./assets/index-game.js?v=whitecube3-${Date.now()}`;
+      document.body.appendChild(script);
+    }
+    function updateLevelName() {
+      const officialLevels = [
+          "Stereo Madness",
+          "Back on Track",
+          "Polargeist",
+          "Dry Out",
+          "Base After Base",
+          "Cant Let Go",
+          "Jumper",
+          "Time Machine",
+          "Cycles",
+          "xStep",
+          "Clutterfunk",
+          "Theory of Everything",
+          "Electroman Adventures",
+          "Clubstep",
+          "Electrodynamix",
+          "Hexagon Force",
+          "Blast Processing",
+          "Theory of Everything 2",
+          "Geometrical Dominator",
+          "Deadlocked",
+          "Fingerdash",
+          "Dash",
+          "Every End"
+      ];
+      if (levelId < 0) {
+        const index = Math.abs(levelId) - 1;
+        if (officialLevels[index]) {
+            window.levelName = officialLevels[index];
+        } else {
+            window.levelName = "Unknown";
+        }
+      }
+    }
+    start();
+    setTimeout(updateLevelName, 1000);
+  </script>
+  <script>
+    let fix = false;
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data.type === "invalid-id") {
+        if (fix) return;
+        fix = true;
+        alert("Level doesn't exist... are you sure you typed the ID correctly?");
+        window.location.href = "/geometrydashdotcom/";
+      }
+      if (event.data.type === "rate-limit") {
+        if (fix) return;
+        fix = true;
+        alert("Site is currently being rate limited from GD servers, please try again later! (you may still use one of the default levels below)");
+        window.location.href = "/geometrydashdotcom/";
+      }
+      if (event.data.type === 'set-level-name') {
+        window.levelName = event.data.name;
+      }
+    });
+  </script>
+  <script>
+    // ResizeObserver catches iframe size changes that window.resize misses
+    // (e.g. parent window maximize, snap, title bar drag)
+    new ResizeObserver(() => {
+      window.dispatchEvent(new Event('resize'));
+    }).observe(document.documentElement);
+  </script>
+</head>
+<body>
+</body>
+</html>
