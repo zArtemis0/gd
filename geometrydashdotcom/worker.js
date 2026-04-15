@@ -1,4 +1,5 @@
 let levelID = null;
+const scopeBase = new URL('./', self.registration.scope);
 
 self.addEventListener('message', event => {
   if (event.data && Object.prototype.hasOwnProperty.call(event.data, 'levelId')) {
@@ -19,14 +20,14 @@ self.addEventListener("fetch", (event) => {
   if (levelID < 0) {
     if (url.pathname.includes("1.txt")) {
       event.respondWith(
-        fetch(`/geometrydashdotcom/game/assets/levels/${levelID}.txt`)
+        fetch(new URL(`game/assets/levels/${levelID}.txt`, scopeBase))
       );
       return;
     }
 
     if (url.pathname.includes("StereoMadness.mp3")) {
       event.respondWith(
-        fetch(`/geometrydashdotcom/game/assets/music/${levelID}.mp3`)
+        fetch(new URL(`game/assets/music/${levelID}.mp3`, scopeBase))
       );
       return;
     }
