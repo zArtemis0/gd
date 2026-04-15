@@ -126,7 +126,7 @@
   </div>
 
   <script>
-    const deployBase = 'https://zartemis0.github.io/gd/geometrydashdotcom/';
+    const deployBase = 'https://zartemis0.github.io/gd/geometrydashdotcom';
 
     function openTab(event, tabName) {
       const contents = document.getElementsByClassName('tab-content');
@@ -144,9 +144,7 @@
     }
 
     function loadLevel(id) {
-      const url = new URL('game/index.html', deployBase);
-      url.searchParams.set('id', id);
-      window.location.href = url.toString();
+      window.location.href = `${deployBase}/game/index.html?id=${encodeURIComponent(id)}`;
     }
 
     function promptLevel() {
